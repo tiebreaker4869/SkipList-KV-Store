@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstring>
+#include <vector>
 
 
 template <typename Key, typename Value>
@@ -13,7 +14,7 @@ struct Node {
     ~Node();
 
     int level;
-    Node<Key, Value>* forward;
+    std::vector<Node<Key, Value>*> forward;
     Key key;
     Value value;
 };
@@ -21,12 +22,12 @@ struct Node {
 
 template<typename Key, typename Value>
 Node<Key, Value>::Node(const Key k, const Value v, int l): 
-key{k}, value{v}, level{l}, forward{new Node<Key, Value>[l + 1]} 
+key{k}, value{v}, level{l}, forward(l + 1, nullptr) 
 {
-    memset(forward, 0, sizeof(void*) * (l + 1));
+    
 }
 
 template<typename Key, typename Value>
 Node<Key, Value>::~Node() {
-    delete[] forward;
+    
 }
