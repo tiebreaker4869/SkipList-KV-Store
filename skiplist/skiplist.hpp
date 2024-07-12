@@ -22,7 +22,7 @@ struct Node {
 
 template<typename Key, typename Value>
 Node<Key, Value>::Node(const Key k, const Value v, int l): 
-key{k}, value{v}, level{l}, forward(l, nullptr) 
+key{k}, value{v}, level{l}, forward(l + 1, nullptr) 
 {
     
 }
