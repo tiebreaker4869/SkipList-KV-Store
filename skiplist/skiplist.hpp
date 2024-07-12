@@ -3,7 +3,8 @@
 #include <cstring>
 #include <vector>
 #include <fstream>
-
+#include <algorithm>
+#include <cstdlib>
 
 template <typename Key, typename Value>
 struct Node {
@@ -19,6 +20,20 @@ struct Node {
     Key key;
     Value value;
 };
+
+
+template<typename Key, typename Value>
+Node<Key, Value>::Node(const Key k, const Value v, int l): 
+key{k}, value{v}, level{l}, forward(l + 1, nullptr) 
+{
+    
+}
+
+template<typename Key, typename Value>
+Node<Key, Value>::~Node() {
+    
+}
+
 
 template<typename Key, typename Value>
 class SkipList {
@@ -59,15 +74,17 @@ private:
     void DeleteRecursively(const Key& key);
 };
 
+template <typename Key, typename Value>
+int SkipList<Key, Value>::RandomHeight() const {
+    int level = 1;
 
-template<typename Key, typename Value>
-Node<Key, Value>::Node(const Key k, const Value v, int l): 
-key{k}, value{v}, level{l}, forward(l + 1, nullptr) 
-{
-    
-}
+    // 模拟抛硬币决定是否上升层级
+    while (rand() % 2) {
+        level ++;
+    }
 
-template<typename Key, typename Value>
-Node<Key, Value>::~Node() {
-    
+    // 不能超过最大 level
+    level = std::min(level, max_level_);
+
+    return level;
 }
