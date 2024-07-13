@@ -39,6 +39,10 @@ Node<Key, Value>::~Node() {
 template<typename Key, typename Value>
 class SkipList {
 public:
+    SkipList(const SkipList&) = delete;
+
+    SkipList& operator=(const SkipList&) = delete;
+
     SkipList(int max_level);
     
     ~SkipList();
