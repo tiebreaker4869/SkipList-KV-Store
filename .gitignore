@@ -33,3 +33,6 @@
 
 # IDE realated
 .vscode
+
+# build result
+build
