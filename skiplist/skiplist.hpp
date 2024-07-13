@@ -5,6 +5,7 @@
 #include <fstream>
 #include <algorithm>
 #include <cstdlib>
+#include <iostream>
 
 template <typename Key, typename Value>
 struct Node {
@@ -212,4 +213,20 @@ void SkipList<Key, Value>::Delete(const Key& key) {
     delete current;
 
     num_element_ --;
+}
+
+template <typename Key, typename Value>
+void SkipList<Key, Value>::Display() const {
+    for (int i = current_level_; i >= 0; i --) {
+        std::cout << "Level " << i << ":";
+
+        auto current = head_.forward[i];
+        while (current) {
+            std::cout << "(" << current->key << ", " << current->value << ") ";
+            current = current->forward[i];
+        }
+
+        // 本层输出结束
+        std::cout << std::endl;
+    }
 }
