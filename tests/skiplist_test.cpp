@@ -3,7 +3,7 @@
 #include "skiplist.hpp"
 
 TEST(SkipListTest, Trivial) {
-    SkipList<int, int> s{12};
+    SkipList<int, int> s{};
 }
 
 // start run main

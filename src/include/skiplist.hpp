@@ -43,7 +43,7 @@ public:
 
     SkipList& operator=(const SkipList&) = delete;
 
-    SkipList(int max_level);
+    SkipList();
     
     ~SkipList();
     
@@ -67,7 +67,7 @@ public:
 
 
 private:
-    int max_level_; // 最大 level
+    enum {kMaxLevel = 13};// 最大 level
     int current_level_; // skiplist 当前的 level
     Node<Key, Value> head_; // 虚拟的头节点
     int num_element_; // 包含的实际节点的个数
@@ -78,8 +78,7 @@ private:
 };
 
 template <typename Key, typename Value>
-SkipList<Key, Value>::SkipList(int max_level): 
-max_level_{max_level}, current_level_{0}, head_{Key{}, Value{}, max_level},
+SkipList<Key, Value>::SkipList(): current_level_{0}, head_{Key{}, Value{}, kMaxLevel},
 num_element_{0} {
 
 }
@@ -106,7 +105,7 @@ int SkipList<Key, Value>::RandomHeight() const {
     int level = 1;
 
     // 模拟抛硬币决定是否上升层级
-    while (rand() % 2 && level < max_level_) {
+    while (rand() % 2 && level < kMaxLevel) {
         level ++;
     }
 
@@ -143,7 +142,7 @@ template <typename Key, typename Value>
 bool SkipList<Key, Value>::Insert(const Key& key, const Value& value) {
     auto current = &head_;
 
-    std::vector<Node<Key, Value>*> updated(max_level_ + 1, nullptr);
+    std::vector<Node<Key, Value>*> updated(kMaxLevel + 1, nullptr);
 
     for (int i = current_level_; i >= 0; i --) {
         while (current->forward[i] && current->forward[i]->key < key) {
@@ -193,7 +192,7 @@ int SkipList<Key, Value>::Size() const {
 template <typename Key, typename Value>
 void SkipList<Key, Value>::Delete(const Key& key) {
     auto current = &head_;
-    std::vector<Node<Key, Value>*> updated(max_level_ + 1, nullptr);
+    std::vector<Node<Key, Value>*> updated(kMaxLevel + 1, nullptr);
 
     for (int i = current_level_; i >= 0; i --) {
         while (current->forward[i] && current->forward[i]->key < key) {
