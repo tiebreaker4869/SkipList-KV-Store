@@ -174,3 +174,42 @@ bool SkipList<Key, Value>::Insert(const Key& key, const Value& value) {
 
     return true;
 }
+
+template <typename Key, typename Value>
+int SkipList<Key, Value>::Size() const {
+    return num_element_;
+}
+
+template <typename Key, typename Value>
+void SkipList<Key, Value>::Delete(const Key& key) {
+    auto current = &head_;
+    std::vector<Node<Key, Value>*> updated(max_level_ + 1, nullptr);
+
+    for (int i = current_level_; i >= 0; i --) {
+        while (current->forward[i] && current->forward[i]->key < key) {
+            current = current->forward[i];
+        }
+        // 记录在每一层可能的前驱
+        updated[i] = current;
+    }
+
+    // 是否找到待删除节点
+    current = current->forward[0];
+    if (current == nullptr || current->key != key) {
+        return;
+    }
+
+    // 只有在 0 - node 的 level 之间 node 有前驱
+    for (int i = 0; i <= current->level; i ++) {
+        updated[i]->forward[i] = current->forward[i];
+    }
+
+    // 调整当前 skiplist 整体 level
+    while (current_level_ > 0 && head_.forward[current_level_] == nullptr) {
+        current_level_ --;
+    }
+
+    delete current;
+
+    num_element_ --;
+}
