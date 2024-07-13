@@ -127,7 +127,7 @@ const Value* SkipList<Key, Value>::Get(const Key& key) const {
     current = current->forward[0];
 
     if (current && current->key == key) {
-        return current;
+        return &current->value;
     }
 
     return nullptr;
