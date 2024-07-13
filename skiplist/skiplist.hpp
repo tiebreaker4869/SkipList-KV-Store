@@ -44,7 +44,7 @@ public:
     
     int RandomHeight() const;
 
-    void Insert(const Key& key, const Value& value);
+    bool Insert(const Key& key, const Value& value);
 
     bool Contains(const Key& key) const;
 
@@ -82,7 +82,12 @@ num_element_{0} {
 
 template <typename Key, typename Value>
 SkipList<Key, Value>::~SkipList() {
-    // TODO: implement destructor
+    auto current = head_.forward[0];
+    while (current) {
+        auto next = current->forward[0];
+        delete current;
+        current = next;
+    }
 }
 
 template <typename Key, typename Value>
@@ -96,12 +101,9 @@ int SkipList<Key, Value>::RandomHeight() const {
     int level = 1;
 
     // 模拟抛硬币决定是否上升层级
-    while (rand() % 2) {
+    while (rand() % 2 && level < max_level_) {
         level ++;
     }
-
-    // 不能超过最大 level
-    level = std::min(level, max_level_);
 
     return level;
 }
@@ -110,7 +112,7 @@ template <typename Key, typename Value>
 bool SkipList<Key, Value>::Contains(const Key& key) const {
     auto current = &head_;
 
-    for (int i = max_level_; i >= 0; i --) {
+    for (int i = current_level_; i >= 0; i --) {
         // 在每一层尝试往前走, 走到头则下沉
         while (current->forward[i] && current->forward[i]->key < key) {
             current = current->forward[i];
@@ -128,6 +130,47 @@ bool SkipList<Key, Value>::Contains(const Key& key) const {
 }
 
 template <typename Key, typename Value>
-void SkipList<Key, Value>::Insert(const Key& key, const Value& value) {
-    // TODO: implement insert
+bool SkipList<Key, Value>::Insert(const Key& key, const Value& value) {
+    auto current = &head_;
+
+    std::vector<Node<Key, Value>*> updated(max_level_ + 1, nullptr);
+
+    for (int i = current_level_; i >= 0; i --) {
+        while (current->forward[i] && current->forward[i]->key < key) {
+            current = current->forward[i];
+        }
+        updated[i] = current;
+    }
+
+    current = current->forward[0];
+
+    // 待插入的 key 已经存在
+    if (current && current->key == key) {
+        return false;
+    }
+
+    // 插入过程
+    int level = RandomHeight();
+
+    // 如果插入的节点 level 大于当前 level
+    if (level > current_level_) {
+        for (int i = current_level_ + 1; i <= level; i ++) {
+            updated[i] = &head_;
+        }
+
+        current_level_ = level;
+    }
+
+    // 创建新节点
+    auto node = NewNode(key, value, level);
+
+    // 在各层插入新节点, 更新 forward 指针
+    for (int i = 0; i <= level; i ++) {
+        node->forward[i] = updated[i]->forward[i];
+        updated[i]->forward[i] = node;
+    }
+
+    num_element_ ++;
+
+    return true;
 }
