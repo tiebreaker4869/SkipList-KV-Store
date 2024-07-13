@@ -9,6 +9,21 @@ include_directories(
     src/include
 )
 
+# 查找 clang-format
+find_program(CLANG_FORMAT "clang-format")
+if(CLANG_FORMAT)
+    file(GLOB_RECURSE ALL_CXX_SOURCE_FILES
+        "${CMAKE_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_SOURCE_DIR}/src/*.hpp"
+        "${CMAKE_SOURCE_DIR}/include/*.hpp"
+        "${CMAKE_SOURCE_DIR}/tests/*.cpp"
+    )
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT} -i ${ALL_CXX_SOURCE_FILES}
+        COMMENT "Running clang-format on source files"
+    )
+endif()
+
 # 查找 Boost 库
 find_package(Boost REQUIRED COMPONENTS system filesystem)
 
