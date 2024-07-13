@@ -53,6 +53,8 @@ public:
 
     bool Contains(const Key& key) const;
 
+    const Value* Get(const Key& key) const;
+
     void Delete(const Key& key);
 
     void Display() const;
@@ -69,8 +71,6 @@ private:
     int current_level_; // skiplist 当前的 level
     Node<Key, Value> head_; // 虚拟的头节点
     int num_element_; // 包含的实际节点的个数
-    std::ifstream file_reader_; // 读文件
-    std::ofstream file_writer_; // 写文件
 
     Node<Key, Value>* NewNode(const Key& key, const Value& value, const int level);
 
@@ -114,7 +114,7 @@ int SkipList<Key, Value>::RandomHeight() const {
 }
 
 template <typename Key, typename Value>
-bool SkipList<Key, Value>::Contains(const Key& key) const {
+const Value* SkipList<Key, Value>::Get(const Key& key) const {
     auto current = &head_;
 
     for (int i = current_level_; i >= 0; i --) {
@@ -128,10 +128,15 @@ bool SkipList<Key, Value>::Contains(const Key& key) const {
     current = current->forward[0];
 
     if (current && current->key == key) {
-        return true;
+        return current;
     }
 
-    return false;
+    return nullptr;
+}
+
+template <typename Key, typename Value>
+bool SkipList<Key, Value>::Contains(const Key& key) const {
+    return Get(key) != nullptr;
 }
 
 template <typename Key, typename Value>
@@ -233,4 +238,14 @@ void SkipList<Key, Value>::Display() const {
         // 本层输出结束
         std::cout << std::endl;
     }
+}
+
+template <typename Key, typename Value>
+void SkipList<Key, Value>::LoadFromFile(const std::string& filename) {
+
+}
+
+template <typename Key, typename Value>
+void SkipList<Key, Value>::DumpToFile(const std::string& filename) {
+    
 }
