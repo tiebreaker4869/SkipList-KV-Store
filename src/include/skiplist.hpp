@@ -5,6 +5,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <mutex>
 #include <vector>
 
 template <typename Key, typename Value> struct Node {
@@ -61,10 +62,10 @@ private:
   Node<Key, Value> head_;  // 虚拟的头节点
   int num_element_;        // 包含的实际节点的个数
 
+  mutable std::mutex mtx;
+
   Node<Key, Value> *NewNode(const Key &key, const Value &value,
                             const int level);
-
-  void DeleteRecursively(const Key &key);
 };
 
 template <typename Key, typename Value>
@@ -128,6 +129,9 @@ bool SkipList<Key, Value>::Contains(const Key &key) const {
 
 template <typename Key, typename Value>
 bool SkipList<Key, Value>::Insert(const Key &key, const Value &value) {
+
+  std::lock_guard<std::mutex> lock_guard{mtx};
+
   auto current = &head_;
 
   std::vector<Node<Key, Value> *> updated(kMaxLevel + 1, nullptr);
@@ -173,12 +177,19 @@ bool SkipList<Key, Value>::Insert(const Key &key, const Value &value) {
 }
 
 template <typename Key, typename Value> int SkipList<Key, Value>::Size() const {
+
+  std::lock_guard<std::mutex> lock_guard{mtx};
+
   return num_element_;
 }
 
 template <typename Key, typename Value>
 void SkipList<Key, Value>::Delete(const Key &key) {
+
+  std::lock_guard<std::mutex> lock_guard{mtx};
+
   auto current = &head_;
+
   std::vector<Node<Key, Value> *> updated(kMaxLevel + 1, nullptr);
 
   for (int i = current_level_; i >= 0; i--) {
@@ -212,6 +223,9 @@ void SkipList<Key, Value>::Delete(const Key &key) {
 
 template <typename Key, typename Value>
 void SkipList<Key, Value>::Display() const {
+
+  std::lock_guard<std::mutex> lock_guard{mtx};
+
   for (int i = current_level_; i >= 0; i--) {
     std::cout << "Level " << i << ":";
 
