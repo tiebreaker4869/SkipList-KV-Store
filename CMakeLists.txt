@@ -37,5 +37,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 # 添加测试文件
 add_executable(all_tests tests/skiplist_test.cpp)
 
+add_executable(perf_tests tests/skiplist_perftest.cpp)
+
 # 链接 Google Test 库
 target_link_libraries(all_tests GTest::GTest GTest::Main)
