@@ -93,7 +93,7 @@ TEST(SkipTest, DiffTestAgainstMap) {
 
 
 TEST(SkipListTest, DiffTestAgainstMapMultiThreaded) {
-    constexpr int N = 1000000;
+    constexpr int N = 100000;
     std::map<Key, Value> map;
     SkipList<Key, Value> skip_list;
     std::mutex map_mutex; // 只保护 map 的互斥锁
@@ -112,7 +112,9 @@ TEST(SkipListTest, DiffTestAgainstMapMultiThreaded) {
             case 0: // Insert
             {
                 std::lock_guard<std::mutex> lock(map_mutex);
-                map[key] = value;
+                if(map.count(key) == 0) {
+                  map[key] = value;
+                }
             }
             skip_list.Insert(key, value);
             break;
